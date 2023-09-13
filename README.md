@@ -1,2 +1,1 @@
-# mol_gen_xyz
-Generate xyz files for random molecules
+# Generate XYZ files for molecules with random atomic coordinates
