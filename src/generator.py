@@ -20,9 +20,12 @@ class Molecule:
         self.xyz_block = self._get_xyz_block()
 
     def _get_xyz_block(self):
-        xyz_block = f"{len(self.atomic_numbers)}\n"
-        for symbol, position in zip(self.atomic_symbols, self.positions):
-            xyz_block += f"{symbol}:    {position[0]:.5f}     {position[1]:.5f}     {position[2]:.5f}\n"
+        xyz_block = f"{len(self.atomic_numbers)}\n \n"
+        for i, (symbol, position) in enumerate(zip(self.atomic_symbols, self.positions)):
+            if i == len(self.atomic_numbers)-1:
+                xyz_block += f"{symbol}    {position[0]:.5f}     {position[1]:.5f}     {position[2]:.5f}"
+            else:
+                xyz_block += f"{symbol}    {position[0]:.5f}     {position[1]:.5f}     {position[2]:.5f}\n"
         return xyz_block
     
 
@@ -102,7 +105,7 @@ def generate_mol(n_atoms_min: int,
 
     networkx_graph = nx.Graph(bonds)
     subgraphs_list = list(nx.connected_components(networkx_graph))
-    print(accept)
+
     if no_disconnected_mols and len(subgraphs_list) > 1:
         accept = False
 
