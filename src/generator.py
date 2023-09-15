@@ -3,6 +3,7 @@ import numpy as np
 import networkx as nx
 from typing import Union
 from sklearn.neighbors import KDTree
+from src.utils import atomic_numbers_to_symbols
 
 class Molecule:
     """
@@ -15,6 +16,14 @@ class Molecule:
         
         self.atomic_numbers = atomic_numbers
         self.positions = positions
+        self.atomic_symbols = [atomic_numbers_to_symbols[number] for number in atomic_numbers]
+        self.mol_block = self._get_mol_block()
+
+    def _get_mol_block(self):
+        mol_block = f"{len(self.atomic_numbers)}\n"
+        for symbol, position in zip(self.atomic_symbols, self.positions):
+            mol_block += f"{symbol}:    {position[0]:.5f}     {position[1]:.5f}     {position[2]:.5f}\n"
+        return mol_block
     
 
 
@@ -42,7 +51,7 @@ def generate_mol(n_atoms_min: int,
         Molecule - generated molecule 
         accept - whether the generated molecule satisfies all conditions
     """
-    
+
     accept = True
     if n_atoms_min == n_atoms_max:
         n_atoms = n_atoms_max
