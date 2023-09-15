@@ -1,6 +1,5 @@
 import streamlit as st
 from src.main import main
-from rdkit.Chem import AllChem
 from src.utils import get_connected_mol, display_molecule, optimize_geometry
 
 
