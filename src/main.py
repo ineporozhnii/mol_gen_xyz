@@ -48,7 +48,7 @@ def main(n_mols: int = 10,
 
         if n_generated_mols == generated_limit and n_accepted_mols == 0:
             warnings.warn(f"Generated: {n_generated_mols}, accepted: 0, stopping.", stacklevel=3)
-            break
+            return None
     
     return mol_list
 
