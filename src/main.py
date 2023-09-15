@@ -11,28 +11,35 @@ def main(n_mols: int = 10,
          n_atoms_max: int = 10, 
          atomic_numbers: list[int] = [1, 6, 8], 
          unit_cell: list[float] = [5.0, 5.0, 5.0],
-         min_radius: float = 2.0,
-         max_radius: float = 10.0,
+         min_distance: float = 2.0,
+         max_distance: float = 10.0,
          random_seed: int = 42,
          name_id: str = "mol",
-         generated_limit: int = 10
+         generated_limit: int = 10,
+         no_disconnected_mols: bool = True
          ):
     
     random.seed(random_seed)
-
-    mol_id_list = []
-    all_atoms_list = []
     
-
     n_accepted_mols = 0
     n_generated_mols = 0
 
     while n_accepted_mols < n_mols:
     
 
-        mol = generate_mol()
-
+        mol, accept = generate_mol(n_atoms_min = n_atoms_min,
+                           n_atoms_max = n_atoms_max,
+                           atomic_numbers = atomic_numbers,
+                           unit_cell = unit_cell, 
+                           min_distance = min_distance,
+                           max_distance = max_distance,
+                           no_disconnected_mols = no_disconnected_mols)
+        
         n_generated_mols += 1
+        if accept:
+            print(mol.atomic_numbers)
+            n_accepted_mols += 1
+
         if n_generated_mols == generated_limit and n_accepted_mols == 0:
             warnings.warn(f"Generated: {n_generated_mols}, accepted: 0, stopping.", stacklevel=3)
             break
