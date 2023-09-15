@@ -37,6 +37,7 @@ def generate_mol(n_atoms_min: int,
                  min_distance: float,
                  max_distance: float,
                  no_disconnected_mols: True,
+                 limit: int = 1000
                  ) -> Union[Molecule, bool]:
     """
     Finction to generate molecules with random atomic positions
@@ -49,7 +50,8 @@ def generate_mol(n_atoms_min: int,
         min_distance - minimum allowed distance between atoms
         max_distance - maximum allowed distance between atoms
         no_disconnected_mols - if True, accepts only molecules with one subgraph 
-    
+        limit - maximum number of attempts to place atom in the unit cell
+
     Output:
         Molecule - generated molecule 
         accept - whether the generated molecule satisfies all conditions
@@ -66,10 +68,11 @@ def generate_mol(n_atoms_min: int,
     check_coords = []
     system_coords = []
 
-    coords = [0.0, 0.0, 0.0]
+    coords = [unit_cell[0]/2, unit_cell[1]/2, unit_cell[2]/2]  #first atom in the center
     system_coords.append(coords)
     check_coords.append(coords)
-
+    
+    n_failed_atoms = 0
     while len(system_coords) < n_atoms:
         x = random.uniform(0, unit_cell[0])
         y = random.uniform(0, unit_cell[1])
@@ -82,7 +85,11 @@ def generate_mol(n_atoms_min: int,
         if tree.query_radius(arr[-1].reshape(1, -1), r=min_distance, count_only=True) == 1:
             system_coords.append(coords)
         else:
+            n_failed_atoms += 1
             del check_coords[-1]
+        
+        if n_failed_atoms > limit:
+            return None, False
 
     system_coords = np.array(system_coords)
 
