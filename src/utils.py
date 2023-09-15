@@ -5,7 +5,6 @@ from typing import Union
 from stmol import showmol
 from ase import Atoms
 from ase.optimize import BFGS
-from tblite.ase import TBLite
 from ase.calculators.lj import LennardJones
 from rdkit.Chem import rdDetermineBonds
 from rdkit.Chem.Draw import IPythonConsole

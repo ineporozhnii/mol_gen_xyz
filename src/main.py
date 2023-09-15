@@ -2,7 +2,6 @@ import os
 import json
 import random
 import warnings
-import numpy as np
 from src.utils import check_input
 from src.generator import generate_mol
 
