@@ -17,13 +17,13 @@ class Molecule:
         self.atomic_numbers = atomic_numbers
         self.positions = positions
         self.atomic_symbols = [atomic_numbers_to_symbols[number] for number in atomic_numbers]
-        self.mol_block = self._get_mol_block()
+        self.xyz_block = self._get_xyz_block()
 
-    def _get_mol_block(self):
-        mol_block = f"{len(self.atomic_numbers)}\n"
+    def _get_xyz_block(self):
+        xyz_block = f"{len(self.atomic_numbers)}\n"
         for symbol, position in zip(self.atomic_symbols, self.positions):
-            mol_block += f"{symbol}:    {position[0]:.5f}     {position[1]:.5f}     {position[2]:.5f}\n"
-        return mol_block
+            xyz_block += f"{symbol}:    {position[0]:.5f}     {position[1]:.5f}     {position[2]:.5f}\n"
+        return xyz_block
     
 
 

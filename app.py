@@ -75,7 +75,7 @@ def app():
 
         with col2:
             st.header("Geometry xyz:")
-            st.text(st.session_state["mol_dict"][selected_mol_id].mol_block)
+            st.text(st.session_state["mol_dict"][selected_mol_id].xyz_block)
 
 
 
