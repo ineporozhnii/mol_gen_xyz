@@ -18,4 +18,4 @@ def check_input(config_dict: dict) -> dict[str, Union[int, float, list, str]]:
         
 
 def get_allowed_arguments() -> dict[str, type]:
-    return {"n_mols": int, "n_atoms_min": int, "n_atoms_max": int, "atomic_numbers": list, "unit_cell": list, "min_distance": float, "max_distance": float, "random_seed": int, "name_id": str}
+    return {"n_mols": int, "n_atoms_min": int, "n_atoms_max": int, "atomic_numbers": list, "unit_cell": list, "min_distance": float, "max_distance": float, "random_seed": int, "name_id": str, "no_disconnected_mols": bool}
