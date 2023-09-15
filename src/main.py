@@ -3,8 +3,8 @@ import json
 import random
 import warnings
 import numpy as np
-from utils import check_input
-from generator import generate_mol
+from src.utils import check_input
+from src.generator import generate_mol
 
 def main(n_mols: int = 10, 
          n_atoms_min: int = 5, 
@@ -16,10 +16,14 @@ def main(n_mols: int = 10,
          random_seed: int = 42,
          name_id: str = "mol",
          generated_limit: int = 10,
-         no_disconnected_mols: bool = True
+         no_disconnected_mols: bool = True,
+         return_mols: bool = True
          ):
     
     random.seed(random_seed)
+
+    if return_mols: 
+        mol_list = []
     
     n_accepted_mols = 0
     n_generated_mols = 0
@@ -37,14 +41,16 @@ def main(n_mols: int = 10,
         
         n_generated_mols += 1
         if accept:
-            print(mol.atomic_numbers)
             n_accepted_mols += 1
+
+            if return_mols:
+                mol_list.append(mol)
 
         if n_generated_mols == generated_limit and n_accepted_mols == 0:
             warnings.warn(f"Generated: {n_generated_mols}, accepted: 0, stopping.", stacklevel=3)
             break
-
-    return
+    
+    return mol_list
 
 if __name__ == '__main__':
     if os.path.exists('config.json'):
