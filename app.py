@@ -1,3 +1,4 @@
+from PIL import Image
 import streamlit as st
 from src.main import main
 from src.utils import get_connected_mol, display_molecule, optimize_geometry
@@ -7,9 +8,19 @@ st.set_page_config(layout="wide", page_title="Generate random molecules")
 
 
 def get_input():
-    st.sidebar.title("Molecule Generator")
     from src.utils import atomic_numbers_to_symbols
-    atomic_symbols_to_numbers = dict((atomic_numbers_to_symbols[key], key) for (key, value) in atomic_numbers_to_symbols.items())
+
+    st.markdown("""
+    <style>
+        .css-15uh7qh.esravye0 {
+        margin-top: -75px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    
+    app_logo = Image.open('src/assets/mol_gen_logo.png')
+    st.sidebar.image(app_logo)
 
     n_mols = st.sidebar.slider("Select number of molecules to generate", 
                                min_value=1, 
@@ -21,7 +32,6 @@ def get_input():
                                                  min_value=2, 
                                                  max_value=20, 
                                                  value=(2, 5))
-    
     
     atomic_symbols = st.sidebar.multiselect("Select allowed elements", 
                                             [f"{str(number)}: {symbol}" for (number, symbol) in atomic_numbers_to_symbols.items()], 
@@ -51,7 +61,6 @@ def app():
     n_mols, n_atoms_min, n_atoms_max, atomic_symbols, atomic_numbers, unit_cell, min_distance, max_distance, random_seed, no_disconnected_mols = get_input()
 
     generate_button = st.sidebar.button("Generate", type='primary', use_container_width=True)
-    #st.sidebar.write("**Created by Ihor Neporozhnii**, [GitHub](https://github.com/ineporozhnii/mol_gen_xyz)")
     st.sidebar.markdown("<h3 style='text-align: center; color: #31333F;'>Created by Ihor Neporozhnii</h3>", unsafe_allow_html=True)
     st.sidebar.markdown("""<a style='display: block; text-align: center;' href="https://github.com/ineporozhnii/mol_gen_xyz">GitHub</a>""", unsafe_allow_html=True)
 
@@ -120,8 +129,6 @@ def app():
         save_all_button = st.button("Save all generated XYZs", type='primary', use_container_width=True)
         if save_all_button:
             st.write("saving")
-
-
 
 
 
