@@ -5,6 +5,7 @@ from rdkit import Chem
 from typing import Union
 from stmol import showmol
 from ase import Atoms
+from tblite.ase import TBLite
 from ase.optimize import BFGS
 from ase.calculators.lj import LennardJones
 from rdkit.Chem import rdDetermineBonds
@@ -50,7 +51,7 @@ def display_molecule(mol_block):
     xyzview.zoomTo()
     showmol(xyzview, height=500, width=800)
 
-def optimize_geometry(atomic_numbers, positions):
+def optimize_geometry(atomic_numbers, positions) -> Union[str, list[int], list[float]]:
     atoms = Atoms(atomic_numbers, 
                   positions)
     
@@ -63,6 +64,27 @@ def optimize_geometry(atomic_numbers, positions):
     updated_positions = atoms.get_positions()
     xyz_block = get_xyz_block(atomic_symbols = atoms.get_chemical_symbols(), 
                               positions = updated_positions)
+    
+    return xyz_block, atomic_numbers, updated_positions
+
+
+def optimize_geometry_xtb(atomic_numbers, positions) -> str:
+    atoms = Atoms(atomic_numbers, 
+                  positions)
+    
+    calc = TBLite(method="GFN1-xTB", max_iterations=1000)
+    atoms.calc = calc
+
+    dyn = BFGS(atoms)
+
+    try:
+        dyn.run(fmax=0.05)
+
+        updated_positions = atoms.get_positions()
+        xyz_block = get_xyz_block(atomic_symbols = atoms.get_chemical_symbols(), 
+                                positions = updated_positions)
+    except Exception as e:
+        return None
     
     return xyz_block
 

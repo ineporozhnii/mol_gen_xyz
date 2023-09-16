@@ -1,7 +1,7 @@
 from PIL import Image
 import streamlit as st
 from src.main import main
-from src.utils import get_connected_mol, display_molecule, optimize_geometry
+from src.utils import get_connected_mol, display_molecule, optimize_geometry, optimize_geometry_xtb
 
 
 st.set_page_config(layout="wide", page_title="Generate random molecules")
@@ -61,7 +61,7 @@ def app():
     n_mols, n_atoms_min, n_atoms_max, atomic_symbols, atomic_numbers, unit_cell, min_distance, max_distance, random_seed, no_disconnected_mols = get_input()
 
     generate_button = st.sidebar.button("Generate", type='primary', use_container_width=True)
-    st.sidebar.markdown("<h3 style='text-align: center; color: #31333F;'>Created by Ihor Neporozhnii</h3>", unsafe_allow_html=True)
+    st.sidebar.markdown("<h3 style='text-align: center; color: #31333F;'>Developed by Ihor Neporozhnii</h3>", unsafe_allow_html=True)
     st.sidebar.markdown("""<a style='display: block; text-align: center;' href="https://github.com/ineporozhnii/mol_gen_xyz">GitHub</a>""", unsafe_allow_html=True)
 
     mol_list = []
@@ -105,25 +105,60 @@ def app():
                                     st.session_state["mol_dict"][selected_mol_id].xyz_block, 
                                     file_name=f'{selected_mol_id}_geometry.xyz')
 
-        with st.expander("Optimized molecule", expanded=True):
-            optimize_button = st.button("Pre-optimize geometry with BFGS + Lennard-Jones", type='primary', use_container_width=True)
+        with st.expander("Pre-optimized molecule", expanded=True):
+            preoptimize_button = st.button("Pre-optimize geometry with BFGS + Lennard-Jones", type='primary', use_container_width=True)
             col1, col2 = st.columns(2)
             with col1:
-                if optimize_button:
-                    optimized_xyz_block = optimize_geometry(st.session_state["mol_dict"][selected_mol_id].atomic_numbers, 
-                                                        st.session_state["mol_dict"][selected_mol_id].positions)
+                if preoptimize_button or f"{selected_mol_id}_preoptimized_mol_block" in st.session_state:
+                    preoptimized_xyz_block, atomic_numbers, updated_positions, = optimize_geometry(st.session_state["mol_dict"][selected_mol_id].atomic_numbers, 
+                                                                                                   st.session_state["mol_dict"][selected_mol_id].positions)
+                    
+                    st.session_state["preoptimized_atomic_numbers"] = atomic_numbers
+                    st.session_state["preoptimized_atomic_positions"] = updated_positions
                 
-                    mol_block = get_connected_mol(optimized_xyz_block)
+                    mol_block = get_connected_mol(preoptimized_xyz_block)
+                    st.session_state[f"{selected_mol_id}_preoptimized_mol_block"] = mol_block
 
-                    st.header("Optimized molecule:")
+                    st.header("Pre-optimized molecule:")
                     display_molecule(mol_block)
             with col2:
-                if optimize_button:
-                    st.header("Optimized xyz:")
-                    st.text(optimized_xyz_block)
+                if preoptimize_button or f"{selected_mol_id}_preoptimized_mol_block" in st.session_state:
+                    st.header("Pre-optimized xyz:")
+                    st.text(preoptimized_xyz_block)
                     st.download_button('Download pre-optimized geometry XYZ file', 
-                                       optimized_xyz_block, 
+                                       preoptimized_xyz_block, 
                                        file_name=f'{selected_mol_id}_geometry_pre_optimized.xyz')
+                
+        if "preoptimized_atomic_numbers" in st.session_state:
+            with st.expander("Optimized molecule", expanded=True):
+                optimize_button = st.button("Optimize geometry with BFGS + GFN1-xTB", type='primary', use_container_width=True)
+                col1, col2 = st.columns(2)
+                with col1:
+                    if optimize_button:
+                        optimized_xyz_block = optimize_geometry_xtb(st.session_state["preoptimized_atomic_numbers"], 
+                                                                    st.session_state["preoptimized_atomic_positions"])
+                        
+                        if optimized_xyz_block is None:
+                            st.error("Opimization with GFN1-xTB failed", icon="⚛")
+                        
+                        else:
+                            mol_block = get_connected_mol(optimized_xyz_block)
+
+                            st.header("Optimized molecule:")
+                            display_molecule(mol_block)
+                with col2:
+                    if optimize_button and optimized_xyz_block is not None:
+                        st.header("Optimized xyz:")
+                        st.text(optimized_xyz_block)
+                        st.download_button('Download optimized geometry XYZ file', 
+                                        optimized_xyz_block, 
+                                        file_name=f'{selected_mol_id}_geometry_optimized.xyz')
+                
+
+
+
+
+
 
         st.divider()
         save_all_button = st.button("Save all generated XYZs", type='primary', use_container_width=True)
