@@ -77,8 +77,6 @@ packaging==23.1
 pandas==2.0.3
 pandocfilters==1.5.0
 parso==0.8.3
-PennyLane==0.31.0
-PennyLane-Lightning==0.31.0
 pexpect==4.8.0
 pickleshare==0.7.5
 Pillow==9.5.0
