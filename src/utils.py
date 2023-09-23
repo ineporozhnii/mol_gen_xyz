@@ -51,6 +51,7 @@ def display_molecule(mol_block):
     xyzview.zoomTo()
     showmol(xyzview, height=500, width=800)
 
+
 def optimize_geometry(atomic_numbers, positions) -> Union[str, list[int], list[float]]:
     atoms = Atoms(atomic_numbers, 
                   positions)
@@ -72,7 +73,7 @@ def optimize_geometry_xtb(atomic_numbers, positions) -> str:
     atoms = Atoms(atomic_numbers, 
                   positions)
     
-    calc = TBLite(method="GFN1-xTB", max_iterations=1000)
+    calc = TBLite(method="GFN1-xTB", max_iterations=500)
     atoms.calc = calc
 
     dyn = BFGS(atoms)
@@ -97,7 +98,6 @@ def get_xyz_block(atomic_symbols: list[str], positions: np.ndarray) -> str:
         else:
             xyz_block += f"{symbol}    {position[0]:.6f}     {position[1]:.6f}     {position[2]:.6f}\n"
     return xyz_block
-
 
 
 atomic_numbers_to_symbols = {1: "H", 
