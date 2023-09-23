@@ -156,15 +156,4 @@ def app():
                 
 
 
-
-
-
-
-        st.divider()
-        save_all_button = st.button("Save all generated XYZs", type='primary', use_container_width=True)
-        if save_all_button:
-            st.write("saving")
-
-
-
 app()
